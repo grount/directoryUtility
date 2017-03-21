@@ -36,6 +36,8 @@
             this.organizeFilesLabel = new System.Windows.Forms.Label();
             this.progressTextBox = new System.Windows.Forms.TextBox();
             this.fileProgressBar = new System.Windows.Forms.ProgressBar();
+            this.deleteLabel = new System.Windows.Forms.Label();
+            this.startRemoveFilesButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // browseButton
@@ -50,8 +52,10 @@
             // 
             // directoryTextBox
             // 
+            this.directoryTextBox.BackColor = System.Drawing.Color.White;
             this.directoryTextBox.Location = new System.Drawing.Point(118, 12);
             this.directoryTextBox.Name = "directoryTextBox";
+            this.directoryTextBox.ReadOnly = true;
             this.directoryTextBox.Size = new System.Drawing.Size(672, 20);
             this.directoryTextBox.TabIndex = 1;
             // 
@@ -68,7 +72,7 @@
             // organizeFilesLabel
             // 
             this.organizeFilesLabel.AutoSize = true;
-            this.organizeFilesLabel.Location = new System.Drawing.Point(23, 48);
+            this.organizeFilesLabel.Location = new System.Drawing.Point(26, 48);
             this.organizeFilesLabel.Name = "organizeFilesLabel";
             this.organizeFilesLabel.Size = new System.Drawing.Size(73, 13);
             this.organizeFilesLabel.TabIndex = 3;
@@ -92,11 +96,32 @@
             this.fileProgressBar.Size = new System.Drawing.Size(777, 23);
             this.fileProgressBar.TabIndex = 5;
             // 
+            // deleteLabel
+            // 
+            this.deleteLabel.AutoSize = true;
+            this.deleteLabel.Location = new System.Drawing.Point(127, 48);
+            this.deleteLabel.Name = "deleteLabel";
+            this.deleteLabel.Size = new System.Drawing.Size(76, 13);
+            this.deleteLabel.TabIndex = 6;
+            this.deleteLabel.Text = "Delete old files";
+            // 
+            // startRemoveFilesButton
+            // 
+            this.startRemoveFilesButton.Location = new System.Drawing.Point(116, 64);
+            this.startRemoveFilesButton.Name = "startRemoveFilesButton";
+            this.startRemoveFilesButton.Size = new System.Drawing.Size(98, 23);
+            this.startRemoveFilesButton.TabIndex = 7;
+            this.startRemoveFilesButton.Text = "Open";
+            this.startRemoveFilesButton.UseVisualStyleBackColor = true;
+            this.startRemoveFilesButton.Click += new System.EventHandler(this.startRemoveFilesButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(802, 357);
+            this.Controls.Add(this.startRemoveFilesButton);
+            this.Controls.Add(this.deleteLabel);
             this.Controls.Add(this.fileProgressBar);
             this.Controls.Add(this.progressTextBox);
             this.Controls.Add(this.organizeFilesLabel);
@@ -121,6 +146,8 @@
         private System.Windows.Forms.Label organizeFilesLabel;
         private System.Windows.Forms.TextBox progressTextBox;
         private System.Windows.Forms.ProgressBar fileProgressBar;
+        private System.Windows.Forms.Label deleteLabel;
+        private System.Windows.Forms.Button startRemoveFilesButton;
     }
 }
 

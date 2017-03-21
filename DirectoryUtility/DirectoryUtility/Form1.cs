@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
-
+using System.Threading;
 
 namespace DirectoryUtility
 {
@@ -21,6 +21,8 @@ namespace DirectoryUtility
         public Form1()
         {
             InitializeComponent();
+            fileProgressBar.Minimum = 1;
+            fileProgressBar.Step = 1;
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -31,6 +33,7 @@ namespace DirectoryUtility
         private void browseFilesDialog()
         {
             progressTextBox.Clear();
+            fileProgressBar.Value = 1;
 
             if (directoryBrowserDialog.ShowDialog() == DialogResult.OK)
             { 
@@ -41,13 +44,26 @@ namespace DirectoryUtility
 
         }
 
+        //public void Wait(double seconds, Action action) // http://stackoverflow.com/questions/15597711/delay-in-c-sharp-not-thread-sleep
+        //{
+        //    Timer timer = new Timer();
+        //    timer.Interval = (int)(seconds * 1000.0);
+        //    timer.Tick += (s, o) => {
+        //        timer.Enabled = false;
+        //        timer.Dispose();
+        //        action();
+        //    };
+        //    timer.Enabled = true;
+        //}
+
         private void organizeFilesStartButton_Click(object sender, EventArgs e)
         {
             if (isPathSelected == true) 
             {
-                if (Directory.Exists(selectedPath)) // might be useles??
+                if (Directory.Exists(selectedPath)) 
                 {
                     string[] files = Directory.GetFiles(selectedPath, "*.*", SearchOption.TopDirectoryOnly);
+                    fileProgressBar.Maximum = files.Length;
 
                     for (int i = 0; i < files.Length; i++)
                     {
@@ -72,6 +88,7 @@ namespace DirectoryUtility
                         System.IO.File.Move(files[i], newPath);
 
                         printActionsToTextBox(fileName, dirInfo.FullName, eAction.Move);
+                        fileProgressBar.PerformStep();
                     
                     }
 
@@ -84,8 +101,7 @@ namespace DirectoryUtility
             }
             else
             {
-                MessageBox.Show("Please select a folder", "No folder selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                browseFilesDialog();
+                invalidPath();
             }
         }
         void printActionsToTextBox(string fileName, string newDirectory, eAction actionType)
@@ -101,9 +117,28 @@ namespace DirectoryUtility
             }
         }
 
+        private void invalidPath()
+        {
+            MessageBox.Show("Please select a folder", "No folder selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            browseFilesDialog();
+        }
+
         private enum eAction
         {
             Move
+        }
+
+        private void startRemoveFilesButton_Click(object sender, EventArgs e)
+        {
+            if (isPathSelected)
+            {
+                DeleteOldFilesForm childForm = new DeleteOldFilesForm(selectedPath);
+                childForm.ShowDialog();
+            }
+            else
+            {
+                invalidPath();
+            }
         }
     }
 }
