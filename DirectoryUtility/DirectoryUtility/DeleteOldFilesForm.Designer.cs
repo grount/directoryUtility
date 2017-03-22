@@ -29,59 +29,60 @@
         private void InitializeComponent()
         {
             this.filesListBox = new System.Windows.Forms.ListBox();
-            this.startButton = new System.Windows.Forms.Button();
             this.removeButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // filesListBox
             // 
             this.filesListBox.FormattingEnabled = true;
             this.filesListBox.HorizontalScrollbar = true;
-            this.filesListBox.Location = new System.Drawing.Point(13, 13);
+            this.filesListBox.Location = new System.Drawing.Point(13, 26);
             this.filesListBox.Name = "filesListBox";
             this.filesListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.filesListBox.Size = new System.Drawing.Size(606, 212);
+            this.filesListBox.Size = new System.Drawing.Size(606, 277);
             this.filesListBox.Sorted = true;
             this.filesListBox.TabIndex = 0;
             // 
-            // startButton
-            // 
-            this.startButton.Location = new System.Drawing.Point(226, 231);
-            this.startButton.Name = "startButton";
-            this.startButton.Size = new System.Drawing.Size(75, 23);
-            this.startButton.TabIndex = 1;
-            this.startButton.Text = "Start";
-            this.startButton.UseVisualStyleBackColor = true;
-            this.startButton.Click += new System.EventHandler(this.startButton_Click);
-            // 
             // removeButton
             // 
-            this.removeButton.Location = new System.Drawing.Point(307, 231);
+            this.removeButton.Location = new System.Drawing.Point(274, 309);
             this.removeButton.Name = "removeButton";
             this.removeButton.Size = new System.Drawing.Size(75, 23);
             this.removeButton.TabIndex = 2;
             this.removeButton.Text = "Remove";
             this.removeButton.UseVisualStyleBackColor = true;
+            this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 7);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(205, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Please select the files you want to remove";
             // 
             // DeleteOldFilesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(631, 263);
+            this.ClientSize = new System.Drawing.Size(633, 344);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.removeButton);
-            this.Controls.Add(this.startButton);
             this.Controls.Add(this.filesListBox);
             this.Name = "DeleteOldFilesForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Delete Old Files";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.ListBox filesListBox;
-        private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Button removeButton;
+        private System.Windows.Forms.Label label1;
     }
 }
