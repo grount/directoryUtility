@@ -31,6 +31,7 @@
             this.filesListBox = new System.Windows.Forms.ListBox();
             this.removeButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.selectAllButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // filesListBox
@@ -39,7 +40,7 @@
             this.filesListBox.HorizontalScrollbar = true;
             this.filesListBox.Location = new System.Drawing.Point(13, 26);
             this.filesListBox.Name = "filesListBox";
-            this.filesListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+            this.filesListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.filesListBox.Size = new System.Drawing.Size(606, 277);
             this.filesListBox.Sorted = true;
             this.filesListBox.TabIndex = 0;
@@ -63,11 +64,22 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Please select the files you want to remove";
             // 
+            // selectAllButton
+            // 
+            this.selectAllButton.Location = new System.Drawing.Point(193, 309);
+            this.selectAllButton.Name = "selectAllButton";
+            this.selectAllButton.Size = new System.Drawing.Size(75, 23);
+            this.selectAllButton.TabIndex = 4;
+            this.selectAllButton.Text = "Select All";
+            this.selectAllButton.UseVisualStyleBackColor = true;
+            this.selectAllButton.Click += new System.EventHandler(this.selectAllButton_Click);
+            // 
             // DeleteOldFilesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(633, 344);
+            this.Controls.Add(this.selectAllButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.removeButton);
             this.Controls.Add(this.filesListBox);
@@ -84,5 +96,6 @@
         private System.Windows.Forms.ListBox filesListBox;
         private System.Windows.Forms.Button removeButton;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button selectAllButton;
     }
 }

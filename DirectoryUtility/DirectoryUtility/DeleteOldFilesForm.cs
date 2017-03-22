@@ -26,15 +26,10 @@ namespace DirectoryUtility
             showUnusedFiles();
         }
 
-        private void startButton_Click(object sender, EventArgs e)
-        {
-            //filesListBox.Items.Clear();
-            //showUnusedFiles();
-        }
 
         private void showUnusedFiles()
         {
-            string[] files = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly); // TODO SearchOption.TopDirectoryOnly ?
+            string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories); // TODO SearchOption.TopDirectoryOnly ?
 
             int j = 0;
             for (int i = 0; i < files.Length; i++)
@@ -51,6 +46,7 @@ namespace DirectoryUtility
 
         private void addSelectedItemsToList()
         {
+            selectedList.Clear();
             foreach (var item in filesListBox.SelectedItems)
             {
                 Tuple<string, int> itemToAdd = new Tuple<string, int>(item.ToString(), filesListBox.SelectedIndex);
@@ -78,6 +74,14 @@ namespace DirectoryUtility
             else
             {
                 MessageBox.Show("Please select items", "No files selected", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        private void selectAllButton_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < filesListBox.Items.Count; i++)
+            {
+                filesListBox.SetSelected(i, true);
             }
         }
     }
