@@ -29,13 +29,12 @@ namespace DirectoryUtility
 
         private void showUnusedFiles()
         {
-            string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories); // TODO SearchOption.TopDirectoryOnly ?
-
+            string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories); // SearchOption.TopDirectoryOnly ?
+            DateTime todayDate = DateTime.Now;
             int j = 0;
             for (int i = 0; i < files.Length; i++)
             {
                 DateTime lastAccess = File.GetLastAccessTime(files[i]);
-                DateTime todayDate = DateTime.Now; // TODO put it outside
 
                 if (DateTime.Compare(lastAccess, todayDate) < 0)
                 {
