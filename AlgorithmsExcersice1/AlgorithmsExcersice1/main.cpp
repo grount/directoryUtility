@@ -18,13 +18,12 @@ void Ex2();
 
 struct maxNumber
 {
-	//maxNumber(int stackSize) : stack_size((stackSize / 2) - 1), number_stack(new int[stack_size]), count(0) {}
 	maxNumber(int number, int stackSize) : number(number), stack_size(stackSize / 2), number_stack(new int[stack_size]), count(0) {}
-	//~maxNumber() { delete number_stack; }
 	void push(int number);
 	int pop();
 	int number;
 	bool isEmpty() const { return count == 0; }
+	void deleteStack() { delete[] number_stack; }
 
 private:
 	int stack_size;
@@ -34,9 +33,10 @@ private:
 
 typedef list<maxNumber>::iterator listIterator;
 
-void playOff(list<maxNumber> &myVector);
+void playOff(list<maxNumber> &myList);
 void pushStackAndErase(list<maxNumber> &myList, listIterator &beginIt, listIterator &nextIt);
 int findMaxInStack(list <maxNumber> &myList);
+void listInput(list<maxNumber> &myList);
 
 /* ------------------------------- */
 
@@ -49,7 +49,7 @@ int main()
 	if (scanf("%d", &all_Ex_in_loop) == 1)
 		do {
 			for (i = 1; i < 3; i++)
-				cout << "Ex" << i << "--->" << i << endl;
+				cout << "Exercise " << i << "--->" << i << endl;
 			cout << "EXIT-->0" << endl;
 			do 
 			{
@@ -72,6 +72,18 @@ int main()
 void Ex1()
 {
 	list<maxNumber> myList;
+
+	listInput(myList);
+	playOff(myList);
+
+	int max2 = findMaxInStack(myList);
+
+	cout << "The maximum is: " << myList.begin()->number << " The second maximum is: " << max2 << "\n\n";
+	myList.begin()->deleteStack();
+}
+
+void listInput(list<maxNumber> &myList)
+{
 	int size;
 
 	cout << "Please enter the amount of the players: ";
@@ -83,23 +95,19 @@ void Ex1()
 		cin >> number;
 		myList.push_back(maxNumber(number, size));
 	}
-	playOff(myList);
-
-	int max2 = findMaxInStack(myList);
-	cout << "The maximum is: " << myList.begin()->number << " The second maximum is: " << max2 << "\n\n";
 }
-
 int findMaxInStack(list <maxNumber> &myList)
 {
 	listIterator it = myList.begin();
 	int localMax = it->pop();
+
 	while (!it->isEmpty())
 	{
 		int tempMax = it->pop();
 		if (localMax < tempMax)
 			localMax = tempMax;
-		
 	}
+
 	return localMax;
 }
 
@@ -129,15 +137,15 @@ void playOff(list<maxNumber> &myList)
 void pushStackAndErase(list<maxNumber> &myList, listIterator &beginIt, listIterator &nextIt)
 {
 	beginIt->push(nextIt->number);
+	nextIt->deleteStack();
 	myList.erase(nextIt);
 	nextIt = beginIt;
 }
 
 void Ex2()
 {
-
-
 	
+
 }
 
 void maxNumber::push(int number)
@@ -150,6 +158,6 @@ void maxNumber::push(int number)
 
 int maxNumber::pop()
 {
-	if (count == 0) return 0;
+	if (isEmpty()) return 0;
 	return number_stack[--count];
 }
