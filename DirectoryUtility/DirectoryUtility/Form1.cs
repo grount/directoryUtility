@@ -55,6 +55,11 @@ namespace DirectoryUtility
         //    };
         //    timer.Enabled = true;
         //}
+        private void moveFoldersToFolder(string [] files)
+        {
+
+        }
+
 
         private void organizeFilesStartButton_Click(object sender, EventArgs e)
         {
@@ -65,6 +70,8 @@ namespace DirectoryUtility
                     string[] files = Directory.GetFiles(selectedPath, "*.*", SearchOption.TopDirectoryOnly);
                     fileProgressBar.Maximum = files.Length;
                     string saveFilePath;
+                    bool fileUsedState = true;
+                    
 
                     for (int i = 0; i < files.Length; i++)
                     {
@@ -90,14 +97,29 @@ namespace DirectoryUtility
 
                         ifDuplicateAddDate(ref newPath, saveFilePath);
 
-                        System.IO.File.Move(files[i], newPath);
+                        try
+                        {
+                            System.IO.File.Move(files[i], newPath);
+                        }
+                        catch (System.IO.IOException)
+                        {
+                            if (files.Length == 1)
+                            {
+                                fileUsedState = false;
+                            }
+
+                            continue;
+                        }
 
                         printActionsToTextBox(fileName, dirInfo.FullName, eAction.Move);
                         fileProgressBar.PerformStep();
                     
                     }
-
-                    if (MessageBox.Show("Do you want to enter the directory?", "Opeartiong finished", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) 
+                    if (fileUsedState == false)
+                    {
+                        MessageBox.Show("Cannot move file, Currently in use", "Operation Failed",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else if (MessageBox.Show("Do you want to enter the directory?", "Opeartiong finished", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) 
                         == DialogResult.OK)
                     {
                         Process.Start("explorer.exe", selectedPath);
