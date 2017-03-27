@@ -31,7 +31,6 @@ namespace DirectoryUtility
         {
             string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories); // SearchOption.TopDirectoryOnly ?
             DateTime todayDate = DateTime.Now;
-            int j = 0;
             for (int i = 0; i < files.Length; i++)
             {
                 DateTime lastAccess = File.GetLastAccessTime(files[i]);

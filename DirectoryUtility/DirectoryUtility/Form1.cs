@@ -64,6 +64,7 @@ namespace DirectoryUtility
                 {
                     string[] files = Directory.GetFiles(selectedPath, "*.*", SearchOption.TopDirectoryOnly);
                     fileProgressBar.Maximum = files.Length;
+                    string saveFilePath;
 
                     for (int i = 0; i < files.Length; i++)
                     {
@@ -83,8 +84,12 @@ namespace DirectoryUtility
                         string fileName = Path.GetFileName(files[i]);
 
                         newPath += "\\" + extenstionWithoutDot;
+                        saveFilePath = newPath;
                         DirectoryInfo dirInfo = Directory.CreateDirectory(newPath);
                         newPath += "\\" + fileName;
+
+                        ifDuplicateAddDate(ref newPath, saveFilePath);
+
                         System.IO.File.Move(files[i], newPath);
 
                         printActionsToTextBox(fileName, dirInfo.FullName, eAction.Move);
@@ -102,6 +107,21 @@ namespace DirectoryUtility
             else
             {
                 invalidPath();
+            }
+        }
+
+        private void ifDuplicateAddDate(ref string path, string pathWithFile)
+        {
+            if(System.IO.File.Exists(path) == true)
+            {
+                DateTime thisDay = DateTime.Now;
+                string thisDayString = String.Format("{0:dd-MM-HH_HH-mm-ss}", thisDay);
+                string extension = Path.GetExtension(path);
+                string onlyFileName = Path.GetFileNameWithoutExtension(path);
+                onlyFileName += "_" + thisDayString;
+                onlyFileName += extension;
+                pathWithFile += "\\" + onlyFileName;
+                path = pathWithFile;
             }
         }
         void printActionsToTextBox(string fileName, string newDirectory, eAction actionType)
