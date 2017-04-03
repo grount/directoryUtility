@@ -13,12 +13,12 @@ using System.Threading;
 
 namespace DirectoryUtility
 {
-    public partial class Form1 : Form
+    public partial class MainWindow : Form
     {
         string selectedPath = "";
         bool isPathSelected = false;
 
-        public Form1()
+        public MainWindow()
         {
             InitializeComponent();
             fileProgressBar.Minimum = 1;
@@ -44,27 +44,25 @@ namespace DirectoryUtility
 
         }
 
-        //public void Wait(double seconds, Action action) // http://stackoverflow.com/questions/15597711/delay-in-c-sharp-not-thread-sleep
-        //{
-        //    Timer timer = new Timer();
-        //    timer.Interval = (int)(seconds * 1000.0);
-        //    timer.Tick += (s, o) => {
-        //        timer.Enabled = false;
-        //        timer.Dispose();
-        //        action();
-        //    };
-        //    timer.Enabled = true;
-        //}
-        private void moveFoldersToFolder(string [] files)
+        private void handleFileExtension(ref string extensionWithoutDot, ref string extension)
         {
-
+            if (extension != "")
+            {
+                extensionWithoutDot = extension.Substring(1, extension.Length - 1);
+            }
+            else
+            {
+                extensionWithoutDot = "File";
+            }
         }
 
-
+        static object organizeLock = new object();
         private void organizeFilesStartButton_Click(object sender, EventArgs e)
         {
             if (isPathSelected == true) 
             {
+                progressTextBox.Clear();
+
                 if (Directory.Exists(selectedPath)) 
                 {
                     string[] files = Directory.GetFiles(selectedPath, "*.*", SearchOption.TopDirectoryOnly);
@@ -73,19 +71,12 @@ namespace DirectoryUtility
                     bool fileUsedState = true;
                     
 
-                    for (int i = 0; i < files.Length; i++)
+                    Parallel.For(0, files.Length, i =>
                     {
-                        string extenstion = Path.GetExtension(files[i]);
+                        string extension = Path.GetExtension(files[i]);
                         string extenstionWithoutDot = "";
 
-                        if (extenstion != "")
-                        {
-                            extenstionWithoutDot = extenstion.Substring(1, extenstion.Length - 1);
-                        }
-                        else
-                        {
-                            extenstionWithoutDot = "File";
-                        }
+                        handleFileExtension(ref extenstionWithoutDot, ref extension);
 
                         string newPath = selectedPath;
                         string fileName = Path.GetFileName(files[i]);
@@ -103,19 +94,21 @@ namespace DirectoryUtility
                         }
                         catch (System.IO.IOException)
                         {
-                            if (files.Length == 1)
-                            {
-                                fileUsedState = false;
-                            }
-
-                            continue;
+                            fileUsedState = false;
                         }
 
-                        printActionsToTextBox(fileName, dirInfo.FullName, eAction.Move);
-                        fileProgressBar.PerformStep();
+                        lock(organizeLock)
+                        {
+                            fileProgressBar.PerformStep();
+
+                            if (fileUsedState == true)
+                            {
+                                printActionsToTextBox(fileName, dirInfo.FullName, eAction.Move);
+                            }
+                        }
+                    });
                     
-                    }
-                    if (fileUsedState == false)
+                    if (fileUsedState == false && files.Length == 1)
                     {
                         MessageBox.Show("Cannot move file, Currently in use", "Operation Failed",MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
