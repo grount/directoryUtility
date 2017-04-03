@@ -80,6 +80,7 @@
     <Compile Include="DeleteOldFilesForm.Designer.cs">
       <DependentUpon>DeleteOldFilesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DirectoryOrganize.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

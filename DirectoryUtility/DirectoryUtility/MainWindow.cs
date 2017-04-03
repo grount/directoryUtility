@@ -16,13 +16,16 @@ namespace DirectoryUtility
     public partial class MainWindow : Form
     {
         string selectedPath = "";
-        bool isPathSelected = false;
+        bool isPathSelected;
+        bool isFileUsed;
 
         public MainWindow()
         {
             InitializeComponent();
             fileProgressBar.Minimum = 1;
             fileProgressBar.Step = 1;
+            isPathSelected = false;
+            isFileUsed = false;
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -44,19 +47,8 @@ namespace DirectoryUtility
 
         }
 
-        private void handleFileExtension(ref string extensionWithoutDot, ref string extension)
-        {
-            if (extension != "")
-            {
-                extensionWithoutDot = extension.Substring(1, extension.Length - 1);
-            }
-            else
-            {
-                extensionWithoutDot = "File";
-            }
-        }
-
         static object organizeLock = new object();
+
         private void organizeFilesStartButton_Click(object sender, EventArgs e)
         {
             if (isPathSelected == true) 
@@ -65,50 +57,36 @@ namespace DirectoryUtility
 
                 if (Directory.Exists(selectedPath)) 
                 {
-                    string[] files = Directory.GetFiles(selectedPath, "*.*", SearchOption.TopDirectoryOnly);
-                    fileProgressBar.Maximum = files.Length;
-                    string saveFilePath;
-                    bool fileUsedState = true;
-                    
+                    DirectoryOrganize dirOrganize = new DirectoryOrganize(selectedPath);
 
-                    Parallel.For(0, files.Length, i =>
+                    fileProgressBar.Maximum = dirOrganize.GetFilesLength;
+
+                    isFileUsed = false;
+                    Parallel.For(0, dirOrganize.GetFilesLength, i =>
                     {
-                        string extension = Path.GetExtension(files[i]);
-                        string extenstionWithoutDot = "";
-
-                        handleFileExtension(ref extenstionWithoutDot, ref extension);
-
-                        string newPath = selectedPath;
-                        string fileName = Path.GetFileName(files[i]);
-
-                        newPath += "\\" + extenstionWithoutDot;
-                        saveFilePath = newPath;
-                        DirectoryInfo dirInfo = Directory.CreateDirectory(newPath);
-                        newPath += "\\" + fileName;
-
-                        ifDuplicateAddDate(ref newPath, saveFilePath);
+                        dirOrganize.PreparePathForMoving(i);
 
                         try
                         {
-                            System.IO.File.Move(files[i], newPath);
+                            System.IO.File.Move(dirOrganize.GetFileInDirectoryAtIndex(i), dirOrganize.GetDestinationPath);
                         }
                         catch (System.IO.IOException)
                         {
-                            fileUsedState = false;
+                            isFileUsed = false;
                         }
 
-                        lock(organizeLock)
+                        lock (organizeLock)
                         {
                             fileProgressBar.PerformStep();
 
-                            if (fileUsedState == true)
+                            if (isFileUsed == true)
                             {
-                                printActionsToTextBox(fileName, dirInfo.FullName, eAction.Move);
+                                printActionsToTextBox(dirOrganize.GetFileName, dirOrganize.GetFullPath, eAction.Move);
                             }
                         }
                     });
-                    
-                    if (fileUsedState == false && files.Length == 1)
+
+                    if (isFileUsed == false && dirOrganize.GetFilesLength == 1)
                     {
                         MessageBox.Show("Cannot move file, Currently in use", "Operation Failed",MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -125,20 +103,6 @@ namespace DirectoryUtility
             }
         }
 
-        private void ifDuplicateAddDate(ref string path, string pathWithFile)
-        {
-            if(System.IO.File.Exists(path) == true)
-            {
-                DateTime thisDay = DateTime.Now;
-                string thisDayString = String.Format("{0:dd-MM-HH_HH-mm-ss}", thisDay);
-                string extension = Path.GetExtension(path);
-                string onlyFileName = Path.GetFileNameWithoutExtension(path);
-                onlyFileName += "_" + thisDayString;
-                onlyFileName += extension;
-                pathWithFile += "\\" + onlyFileName;
-                path = pathWithFile;
-            }
-        }
         void printActionsToTextBox(string fileName, string newDirectory, eAction actionType)
         {
             if (actionType == eAction.Move)
@@ -152,15 +116,15 @@ namespace DirectoryUtility
             }
         }
 
+        private enum eAction
+        {
+            Move
+        }
+
         private void invalidPath()
         {
             MessageBox.Show("Please select a folder", "No folder selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
             browseFilesDialog();
-        }
-
-        private enum eAction
-        {
-            Move
         }
 
         private void startRemoveFilesButton_Click(object sender, EventArgs e)

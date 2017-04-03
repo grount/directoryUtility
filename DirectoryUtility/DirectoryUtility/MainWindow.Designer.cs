@@ -115,7 +115,7 @@
             this.startRemoveFilesButton.UseVisualStyleBackColor = true;
             this.startRemoveFilesButton.Click += new System.EventHandler(this.startRemoveFilesButton_Click);
             // 
-            // Form1
+            // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -128,7 +128,7 @@
             this.Controls.Add(this.organizeFilesStartButton);
             this.Controls.Add(this.directoryTextBox);
             this.Controls.Add(this.browseButton);
-            this.Name = "Form1";
+            this.Name = "MainWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Directory Utility";
             this.ResumeLayout(false);
@@ -144,10 +144,10 @@
         private System.Windows.Forms.TextBox directoryTextBox;
         private System.Windows.Forms.Button organizeFilesStartButton;
         private System.Windows.Forms.Label organizeFilesLabel;
-        private System.Windows.Forms.TextBox progressTextBox;
-        private System.Windows.Forms.ProgressBar fileProgressBar;
         private System.Windows.Forms.Label deleteLabel;
         private System.Windows.Forms.Button startRemoveFilesButton;
+        public System.Windows.Forms.ProgressBar fileProgressBar;
+        public System.Windows.Forms.TextBox progressTextBox;
     }
 }
 
