@@ -16,13 +16,14 @@ namespace DirectoryUtility
     public partial class MainWindow : Form
     {
         string selectedPath = "";
-        bool isPathSelected = false;
+        bool isPathSelected;
 
         public MainWindow()
         {
             InitializeComponent();
             fileProgressBar.Minimum = 1;
             fileProgressBar.Step = 1;
+            isPathSelected = false;
         }
 
         private void browseButton_Click(object sender, EventArgs e)
