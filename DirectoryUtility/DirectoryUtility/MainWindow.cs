@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
@@ -10,6 +11,7 @@ namespace DirectoryUtility
     {
         private string selectedPath = "";
         private bool isPathSelected;
+        private HashSet<string> knownFileExtensions = new HashSet<string>();
 
         public MainWindow()
         {
@@ -44,6 +46,16 @@ namespace DirectoryUtility
             extensionWithoutDot = extension != "" ? extension.Substring(1, extension.Length - 1) : "File";
         }
 
+        private void loadSave()
+        {
+            string savePath = selectedPath + "\\Save";
+
+            if (File.Exists(savePath))
+            {
+                knownFileExtensions = ReadFromBinaryFile<HashSet<string>>(selectedPath + "\\Save");
+            }
+        }
+
         private void organizeFilesStartButton_Click(object sender, EventArgs e)
         {
             if (isPathSelected)
@@ -54,20 +66,21 @@ namespace DirectoryUtility
                 {
                     string[] files = Directory.GetFiles(selectedPath, "*.*", SearchOption.TopDirectoryOnly);
                     bool fileUsedState = true;
-
+                    loadSave();
                     fileProgressBar.Maximum = files.Length;
 
                     foreach (string t in files)
                     {
                         string extension = Path.GetExtension(t);
-                        string extenstionWithoutDot = "";
+                        string extensionWithoutDot = "";
 
-                        handleFileExtension(ref extenstionWithoutDot, ref extension);
+                        handleFileExtension(ref extensionWithoutDot, ref extension);
+                        knownFileExtensions.Add(extensionWithoutDot);
 
                         string newPath = selectedPath;
                         string fileName = Path.GetFileName(t);
 
-                        newPath += "\\" + extenstionWithoutDot;
+                        newPath += "\\" + extensionWithoutDot;
                         var saveFilePath = newPath;
                         DirectoryInfo dirInfo = Directory.CreateDirectory(newPath);
                         newPath += "\\" + fileName;
@@ -91,18 +104,8 @@ namespace DirectoryUtility
                         }
                     }
 
-
-                    if (fileUsedState == false && files.Length == 1)
-                    {
-                        MessageBox.Show("Cannot move file, Currently in use", "Operation Failed", MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                    }
-                    else if (MessageBox.Show("Do you want to enter the directory?", "Opeartiong finished",
-                                 MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
-                             == DialogResult.OK)
-                    {
-                        Process.Start("explorer.exe", selectedPath);
-                    }
+                    unifyFolders();
+                    displayMessages(fileUsedState, files.Length);
                 }
             }
             else
@@ -111,10 +114,48 @@ namespace DirectoryUtility
             }
         }
 
+        private void displayMessages(bool fileUsedState, int filesLength)
+        {
+            if (fileUsedState == false && filesLength == 1)
+            {
+                MessageBox.Show("Cannot move file, Currently in use", "Operation Failed", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            else if (MessageBox.Show("Do you want to enter the directory?", "Opeartiong finished",
+                         MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+                     == DialogResult.OK)
+            {
+                Process.Start("explorer.exe", selectedPath);
+            }
+        }
+
+        private void unifyFolders()
+        {
+            try
+            {
+                string[] folders = Directory.GetDirectories(selectedPath);
+                string otherFolderPath = selectedPath + "\\Other";
+                Directory.CreateDirectory(otherFolderPath);
+
+                foreach (string file in folders)
+                {
+                    if (!knownFileExtensions.Contains(Path.GetFileName(file)) && file != otherFolderPath)
+                    {
+                        string newPath = otherFolderPath + "\\" + Path.GetFileName(file);
+                        Directory.Move(file, newPath);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("The following error occurred: ${e}", e.Message);
+            }
+        }
+
 
         private void ifDuplicateAddDate(ref string path, string pathWithFile)
         {
-            if (System.IO.File.Exists(path) == true)
+            if (File.Exists(path))
             {
                 DateTime thisDay = DateTime.Now;
                 string thisDayString = $"{thisDay:dd-MM-HH_HH-mm-ss}";
@@ -164,5 +205,31 @@ namespace DirectoryUtility
                 invalidPath();
             }
         }
+
+
+        private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            string saveFilePath = selectedPath + "\\Save";
+            WriteToBinaryFile(saveFilePath, knownFileExtensions, true);
+        }
+
+        private static void WriteToBinaryFile<T>(string filePath, T objectToWrite, bool append = false)
+        {
+            using (Stream stream = File.Open(filePath, append ? FileMode.Append : FileMode.Create))
+            {
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                binaryFormatter.Serialize(stream, objectToWrite);
+            }
+        }
+
+        private static T ReadFromBinaryFile<T>(string filePath)
+        {
+            using (Stream stream = File.Open(filePath, FileMode.Open))
+            {
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                return (T)binaryFormatter.Deserialize(stream);
+            }
+        }
+
     }
 }

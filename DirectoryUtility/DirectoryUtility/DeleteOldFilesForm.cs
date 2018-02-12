@@ -13,8 +13,8 @@ namespace DirectoryUtility
 {
     public partial class DeleteOldFilesForm : Form
     {
-        string path = "";
-        List<Tuple<string, int>> selectedList;
+        readonly string path = "";
+        readonly List<Tuple<string, int>> selectedList;
 
         public DeleteOldFilesForm(string path)
         {
@@ -66,7 +66,11 @@ namespace DirectoryUtility
                         File.Delete(item.Item1);
                         filesListBox.Items.RemoveAt(item.Item2);
                     }
+                }
 
+                if (Directory.GetFiles(path).Length == 0)
+                {
+                    this.Close();
                 }
             }
             else
